@@ -1,24 +1,85 @@
-from django.shortcuts import render
+from django.views import generic
+from django.contrib.gis.db.models.functions import Distance
+from .models import PublicCourts
+from django.contrib.gis.geos import Point
+
+from django.shortcuts import render, redirect
+
+import json
+from json import dumps
 from django.http import HttpResponse
 
-# Create your views here.
 
-def home_view(request, *args, **kwargs):
-    print(args, kwargs)
-    print(request.user)
-    return render(request, 'home.html', {})
+user_latitude_member = 34.0621149
+user_longitude_member = -118.3088618
 
-# def home_view(request, *args, **kwargs):
-#     return HttpResponse("<h1>Hello World!</h1>")
+class Home(generic.ListView):
+    # Wilshire / Western
+    user_latitude = user_latitude_member
+    user_longitude = user_longitude_member
+    print("USER LAT:", user_latitude)
+    print("USER LONG:", user_longitude)
+    user_location = Point(user_longitude, user_latitude, srid=4326)
+    model = PublicCourts
+    context_object_name = "courts"
+    print(type(context_object_name))
+    queryset = PublicCourts.objects.annotate(distance=Distance('coordinates', user_location)
+    ).order_by("distance")[0:10]
+    print(type(queryset))
+    template_name = 'courts/index.html'
 
-def test_view(request, *args, **kwargs):
-    print(args, kwargs)
-    print(request)
-    print(request.user)
-    return HttpResponse("<h1>Test!</h1>")
 
-def about_view(request, *args, **kwargs):
-    my_context = {
-        "my text" : "This is about us"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def user_location(request):
+#     request_body = json.loads(request.body.decode('utf-8'))
+#     if request_body:
+#         print(request_body['latitude'])
+#         print(type(request_body['latitude']))
+#         user_latitude_member = request_body['latitude']
+#         user_longitude_member = request_body['longitude']
+#         location = {
+#             "user_latitude_member" : user_latitude_member,
+#             "user_longitude_member" : user_longitude_member
+#         }
+#         return redirect('/locate/')
+#     # location = dumps(location)
+#     return render(request, 'courts/locate.html', location)   
+    # return render(request, 'courts/index.html', {"user_latitude_member" : request_body['latitude'],"user_longitude_member" : request_body['longitude']})
+
+def user_location(request):
+    request_body = json.loads(request.body.decode('utf-8'))
+    print(request_body['latitude'])
+    print(type(request_body['latitude']))
+    user_latitude_member = request_body['latitude']
+    user_longitude_member = request_body['longitude']
+    context = {
+        "user_latitude_member" : user_latitude_member,
+        "user_longitude_member" : user_longitude_member
     }
-    return render(request, 'home.html', {})
+    # location = dumps(location)
+    return render(request, 'courts/index.html', {"context": context}) 
+
+
+
+
+    

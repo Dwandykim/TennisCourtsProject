@@ -2,12 +2,24 @@
 <html>
     <head>
         <title> Welcome to the site!</title>
-    </head>
+            <h1>Tennis Courts Nearby</h1>
+            {% for court in all_tennis_courts %}
+            <div>
+                <p>Park Name : {{court.park_name}}</p>
+                <p>Address : {{court.address}}</p>          
+                <p>Park Location: {{court.coordinates}}</p>
+
+            {% endfor %}
+            </div>
+            <h3>Andy Kim</h3>
+        <!-- </head>
     <body>
         {% include 'navbar.html' %}
         
         {% block content %}
         replace me
         {% endblock %}
-    </body>
+    </body> -->
 </html>
+
+

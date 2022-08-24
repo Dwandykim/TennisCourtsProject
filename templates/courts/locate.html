@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+<body>
+    {% block content %}
+    <script>
+        var map = L.map('mapid').setView([34.0621149, -118.3088618], 14);
+
+        var coordinates = [
+            {% for court in courts %}
+            {latitude: {{court.coordinates.y}},
+            longitude: {{court.coordinates.x}},
+            parkName: "{{court.park_name}}",
+            parkFees: "{{court.fees}}",
+            parkLights: "{{court.lights}}",
+            indoorCourts: "{{court.indoor}}",
+            courtsCount: "{{court.courts}}}"},
+            {% endfor %}
+            ]
+        
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        console.log({{location}})
+        
+        L.marker([34.0621149, -118.3088618]).addTo(map)
+        .bindPopup('Tennis Courts Near You.<br> Seven closest public courts!')
+        .openPopup();
+        // console.log(user_latitude, user_longitude)
+
+
+        coordinates.forEach(coordinate => {
+            var parkLatitude = coordinate.latitude;
+            var parkLongitude = coordinate.longitude;
+            var park = coordinate.parkName
+            var fees = coordinate.parkFees;
+            var lights = coordinate.parkLights;
+            var indoor = coordinate.indoorCourts;
+            var courts = coordinate.courtsCount;
+            // var info = "{0}\nPark Fee: {1} \nPark Lights: {2} \nIndoor Courts: + {3} \nNumber of Courts: {4}".format(park,fees,lights,indoor,courts)
+            var info = park + "\nPark Fee:" + fees + "\nPark Lights:" + lights + "\nPark Fee:" + "\nIndoor Courts:" + indoor + "\nNumber of Courts:" + courts
+            // console.log(info)
+            var circle = L.circle([parkLatitude, parkLongitude], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius : 50
+            }).bindPopup(info).addTo(map);
+            // console.log(circle);
+            // console.log(parkLatitude, parkLongitude);
+
+            // console.log(park);
+            // console.log(typeof(park));
+            
+        });
+            
+        </script>
+    {% endblock content %}
+</body>

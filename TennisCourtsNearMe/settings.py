@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # third party
-
+    'django.contrib.gis',
     # my own
     'tennis_court_locations',
 ]
@@ -89,7 +88,7 @@ load_dotenv()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -98,6 +97,8 @@ DATABASES = {
     }
 }
 
+GDAL_LIBRARY_PATH = r'C:\Program Files\QGIS 3.22.9\bin\gdal305'
+GEOS_LIBRARY_PATH = r'C:\Program Files\QGIS 3.22.9\bin\geos_c.dll'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Nearby Courts</title>
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+        crossorigin=""/>
+        <!-- Leaflet JS -->
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""></script>
+        <!-- Set map height -->
+        <style>
+            #mapid {height: 500px; }
+            </style>
+    </head>
+    <body>
+        <h1>Nearby Courts</h1>
+        {% if courts %}
+        <ul>
+            {% for court in courts %}
+            <li>
+                {{ court.park_name }}: {{court.distance}}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <h2>User Location</h2>
+        <!-- map div -->
+        <div id="mapid"></div>
+        <!-- map js -->   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            
+            var map = L.map('mapid').setView([34.0621149, -118.3088618], 14);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            L.marker([34.0621149, -118.3088618]).addTo(map)
+            .bindPopup('Tennis Courts in LA.<br> Seven closest public courts!')
+            .openPopup();
+
+
+            // console.log(user_latitude, user_longitude)
+            // var user_coordinate = [
+                //     {userLatitude: "{{user_latitude_member}}",
+                //     userLongitude: "{{user_longitude_member}}"}
+                // ]
+                // var userLatitude = Number(user_coordinate.userLatitude)
+            // var userLongitude = Number(user_coordinate.userLongitude)
+            // console.log(userLatitude, userLatitude)
+            // // var location = JSON.parse("{{location|escapejs}}");
+            // // console.log(location[0], location[1])
+            
+
+            // var map = L.map('mapid').setView([userLatitude, userLongitude], 14);
+            
+            var coordinates = [
+                {% for court in courts %}
+                {latitude: {{court.coordinates.y}},
+                longitude: {{court.coordinates.x}},
+                parkName: "{{court.park_name}}",
+                parkFees: "{{court.fees}}",
+                parkLights: "{{court.lights}}",
+                indoorCourts: "{{court.indoor}}",
+                courtsCount: "{{court.courts}}}"},
+                {% endfor %}
+                ]
+                // console.log(coordinates[0].parkName);
+                
+            // if(!navigator.geolocation) {
+            //     console.log("Your browser doesn't support this geolocation feature!")
+            // } else {
+            //     navigator.geolocation.getCurrentPosition(getPosition);
+            //     console.log(getPosition)
+            // }
+            
+            // function getPosition(position) {
+            //     console.log(position)
+            //     var lat = String(position.coords.latitude)
+            //     var long = String(position.coords.longitude)
+            //     var accuracy = position.coords.accuracy
+            //     var save_location = [lat, long]
+            //     // console.log(lat, long, accuracy)
+            //     // console.log(position)
+            //     console.log(save_location)
+            //     window.textContext = save_location
+            // };
+            
+            
+
+            // function save_location() {
+            //     $.ajax({
+            //         url: '/save_location/',
+            //         data: {'save_location': save_location},
+            //         type: 'POST'
+            //     }).done(function(response){
+            //         console.log(response);
+            //     });
+            // };
+            
+            // // $.ajax({
+            //     // points to the url where your data will be posted
+            //     url:'/postendpoint/$',
+            //     // post for security reason
+            //     type: "POST",
+            //     // data that you will like to return 
+            //     data: {stock : stock},
+            //     // what to do when the call is success 
+            //     success:function(response){},
+            //     // what to do when the call is complete ( you can right your clean from code here)
+            //     complete:function(){},
+            //     // what to do when there is an error
+            //     error:function (xhr, textStatus, thrownError){}
+            // });
+            
+                // var info = [
+                    //     {% for court in courts %}
+                    //      parkName: "{{court.park_name}}",
+                    //      parkFees: {{court.fees}},
+                    //      parkLights: {{court.lights}},
+                    //      parkIndoorCourts: {{court.indoor}},
+                    //      parkNumberOfCourts: {{court.courts}}},
+            //     {% endfor %}
+            // ]
+            // var parkInfo = JSON.stringify(info)
+            // console.log(parkInfo);
+
+            
+
+            coordinates.forEach(coordinate => {
+                var parkLatitude = coordinate.latitude;
+                var parkLongitude = coordinate.longitude;
+                var park = coordinate.parkName
+                var fees = coordinate.parkFees;
+                var lights = coordinate.parkLights;
+                var indoor = coordinate.indoorCourts;
+                var courts = coordinate.courtsCount;
+                // var info = "{0}\nPark Fee: {1} \nPark Lights: {2} \nIndoor Courts: + {3} \nNumber of Courts: {4}".format(park,fees,lights,indoor,courts)
+                var info = park + "\n|Park Fee:" + fees + "\n|Park Lights:" + lights + "\n|Indoor Courts:" + indoor + "\n|Number of Courts:" + courts
+                // console.log(info)
+                var circle = L.circle([parkLatitude, parkLongitude], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius : 50
+                }).bindPopup(info).addTo(map);
+                // console.log(circle);
+                // console.log(parkLatitude, parkLongitude);
+
+                // console.log(park);
+                // console.log(typeof(park));
+                 
+            });
+            
+            function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                }
+                }
+            });
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    console.log('Position has been set successfully');
+                    // window.location.href = '/your_location/'
+                    dataToSend = {
+                    "latitude": position.coords.latitude,
+                    "longitude": position.coords.longitude
+                    };
+                    console.log(position)
+                    $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: '/locate',
+                    // url: '',
+                    data: JSON.stringify(dataToSend),
+                    success: function (msg) {
+                        console.log('Succeeded!');            
+                    },
+                    error: function (err) {
+                        console.log('Error!');
+                    }
+                    });
+                }, function (error) {
+                    console.log('Position could not be obtained.')
+                }
+                );
+            }
+            
+            
+            console.log("FROM HERE")
+            console.log(location)
+            console.log(typeof location)
+            console.dir(location)
+        </script>
+    </body>
+</html>
