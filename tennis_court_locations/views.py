@@ -38,18 +38,6 @@ class Home(generic.ListView):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # def user_location(request):
 #     request_body = json.loads(request.body.decode('utf-8'))
 #     if request_body:
